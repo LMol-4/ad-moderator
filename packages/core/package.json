@@ -1,5 +1,5 @@
 {
-  "name": "@gabriel/ad-moderator",
+  "name": "ad-moderator-claude",
   "version": "1.0.1",
   "description": "A TypeScript library for detecting images not eligible for public ad spaces with pluggable analysis functions",
   "main": "dist/index.js",

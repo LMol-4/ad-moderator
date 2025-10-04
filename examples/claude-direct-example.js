@@ -15,7 +15,7 @@ async function ejemploClaudeDirecto() {
     const client = new AdModeratorClient();
 
     // 2. Configurar Claude (reemplaza con tu API key real)
-    const claudeApiKey = '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';
+    const claudeApiKey = process.env.CLAUDE_API_KEY || 'tu-api-key-aqui';
     client.setClaudeAnalyzer(claudeApiKey);
 
     // 3. Inicializar
@@ -43,7 +43,6 @@ async function ejemploClaudeDirecto() {
       console.log('   - Detalles:');
       resultado.categories.forEach(cat => {
         console.log(`     • ${cat.name}: ${cat.confidence} (${cat.severity})`);
-        console.log(`       Razón: ${cat.reason}`);
       });
     }
 
