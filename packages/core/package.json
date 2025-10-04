@@ -1,7 +1,7 @@
 {
-  "name": "ad-moderator-claude",
-  "version": "1.0.1",
-  "description": "A TypeScript library for detecting images not eligible for public ad spaces with pluggable analysis functions",
+  "name": "ad-moderator",
+  "version": "1.0.3",
+  "description": "A TypeScript library for detecting images not eligible for public ad spaces using Claude AI",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
@@ -14,8 +14,7 @@
     "lint": "eslint src/**/*.ts",
     "lint:fix": "eslint src/**/*.ts --fix",
     "prepublishOnly": "npm run build",
-    "clean": "rimraf dist",
-    "publish:lib": "npm run build && npm publish --registry https://registry.npmjs.org/"
+    "clean": "rimraf dist"
   },
   "keywords": [
     "ad-moderation",
@@ -24,17 +23,17 @@
     "machine-learning",
     "typescript",
     "npm-library",
-    "pluggable",
     "image-analysis",
     "moderation",
     "claude",
-    "ai"
+    "ai",
+    "anthropic"
   ],
   "author": "Gabriel <gabriel@example.com>",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/ad-moderator.git"
+    "url": "git+https://github.com/yourusername/ad-moderator.git"
   },
   "homepage": "https://github.com/yourusername/ad-moderator#readme",
   "bugs": {

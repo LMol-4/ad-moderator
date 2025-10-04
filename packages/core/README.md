@@ -1,14 +1,65 @@
 # Ad Moderator
 
-Una librería TypeScript para detectar imágenes no elegibles para espacios publicitarios públicos usando Claude API.
+A simple TypeScript library for detecting images not suitable for public advertising using Claude AI.
 
-## Características
+## Installation
 
-- **Integración con Claude**: Análisis de imágenes usando la API de Claude
-- **Arquitectura Pluggable**: Integra cualquier función de análisis de imágenes
-- **Tipado Fuerte**: Completamente tipado con TypeScript
-- **Fácil de Usar**: API simple y clara
-- **Moderación Inteligente**: Detecta contenido inapropiado, violencia, contenido explícito, etc.
+```bash
+npm install ad-moderator
+```
+
+## Usage
+
+```typescript
+import { AdModeratorClient } from 'ad-moderator';
+
+// Initialize with your Anthropic API key
+const client = new AdModeratorClient('your-anthropic-api-key');
+
+// Check if an image is safe for advertising
+const imageBuffer = Buffer.from('your-image-data');
+const result = await client.getAdStatus(imageBuffer, 'digital');
+
+if (result?.isAdCompliant) {
+  console.log('✅ Image is safe for advertising');
+} else {
+  console.log('❌ Image is not safe for advertising');
+  console.log('Reasons:', result?.negativeReasons);
+}
+```
+
+## API
+
+### AdModeratorClient
+
+- `new AdModeratorClient(apiKey: string)` - Initialize with your Anthropic API key
+- `getAdStatus(imageBuffer: Buffer, mediaType: 'digital' | 'physical')` - Check image compliance
+
+### Types
+
+```typescript
+interface AdStatus {
+  isAdCompliant: boolean;
+  negativeReasons?: string[];
+}
+```
+
+## Requirements
+
+- Node.js >= 16.0.0
+- Anthropic API key
+
+## License
+
+MIT
+
+---
+
+## Spanish
+
+# Ad Moderator
+
+Una librería simple de TypeScript para detectar imágenes no aptas para publicidad usando Claude AI.
 
 ## Instalación
 
@@ -16,154 +67,46 @@ Una librería TypeScript para detectar imágenes no elegibles para espacios publ
 npm install ad-moderator
 ```
 
-## Uso Básico
-
-### Con Claude API (Recomendado)
+## Uso
 
 ```typescript
 import { AdModeratorClient } from 'ad-moderator';
 
-const client = new AdModeratorClient();
+// Inicializar con tu clave API de Anthropic
+const client = new AdModeratorClient('tu-clave-api-anthropic');
 
-// Configurar Claude API
-client.setClaudeAnalyzer('tu-api-key-de-claude');
+// Verificar si una imagen es segura para publicidad
+const imageBuffer = Buffer.from('datos-de-tu-imagen');
+const result = await client.getAdStatus(imageBuffer, 'digital');
 
-// Inicializar
-await client.initialize();
-
-// Moderar imagen
-const result = await client.moderateImage({
-  buffer: imageBuffer,
-  type: 'image/jpeg',
-  name: 'ad-image.jpg'
-});
-
-console.log('Es segura:', result.isSafe);
-```
-
-### Con función personalizada
-
-```typescript
-import { AdModeratorClient } from 'ad-moderator';
-
-const client = new AdModeratorClient();
-
-// Configurar función personalizada
-client.setAnalysisFunction(async (imageBuffer, imageType, options) => {
-  // Tu lógica de análisis aquí
-  return [{
-    name: 'inappropriate_content',
-    confidence: 0.85,
-    severity: 'high'
-  }];
-});
-
-// Inicializar y usar
-await client.initialize();
-const result = await client.moderateImage(image);
+if (result?.isAdCompliant) {
+  console.log('✅ La imagen es segura para publicidad');
+} else {
+  console.log('❌ La imagen no es segura para publicidad');
+  console.log('Razones:', result?.negativeReasons);
+}
 ```
 
 ## API
 
 ### AdModeratorClient
 
-#### `setClaudeAnalyzer(apiKey: string)`
-Configura el cliente para usar Claude API directamente.
+- `new AdModeratorClient(apiKey: string)` - Inicializar con tu clave API de Anthropic
+- `getAdStatus(imageBuffer: Buffer, mediaType: 'digital' | 'physical')` - Verificar cumplimiento de imagen
 
-#### `setAnalysisFunction(function: AnalysisFunction)`
-Configura una función personalizada de análisis.
-
-#### `initialize(): Promise<void>`
-Inicializa el cliente.
-
-#### `moderateImage(image: ImageInput, options?: ModerationOptions): Promise<ModerationResult>`
-Modera una imagen individual.
-
-#### `moderateImages(images: ImageInput[], options?: ModerationOptions): Promise<ModerationResult[]>`
-Modera múltiples imágenes.
-
-#### `isImageSafe(image: ImageInput, options?: ModerationOptions): Promise<boolean>`
-Verifica si una imagen es segura para anuncios.
-
-## Tipos
+### Tipos
 
 ```typescript
-interface ImageInput {
-  buffer: Buffer;
-  type: string;
-  name?: string;
-}
-
-interface ModerationResult {
-  isSafe: boolean;
-  confidence: number;
-  categories: ModerationCategory[];
-  metadata?: any;
-}
-
-interface ModerationCategory {
-  name: string;
-  confidence: number;
-  severity: 'low' | 'medium' | 'high' | 'critical';
+interface AdStatus {
+  isAdCompliant: boolean;
+  negativeReasons?: string[];
 }
 ```
 
-## Ejemplos
+## Requisitos
 
-### Moderar una imagen
-
-```typescript
-import { AdModeratorClient } from 'ad-moderator';
-import fs from 'fs';
-
-const client = new AdModeratorClient();
-client.setClaudeAnalyzer('tu-api-key');
-await client.initialize();
-
-// Cargar imagen
-const imageBuffer = fs.readFileSync('imagen.jpg');
-const result = await client.moderateImage({
-  buffer: imageBuffer,
-  type: 'image/jpeg',
-  name: 'imagen.jpg'
-});
-
-if (result.isSafe) {
-  console.log('✅ Imagen aprobada para anuncios');
-} else {
-  console.log('❌ Imagen rechazada:', result.categories);
-}
-```
-
-### Moderar múltiples imágenes
-
-```typescript
-const images = [
-  { buffer: image1Buffer, type: 'image/jpeg', name: 'img1.jpg' },
-  { buffer: image2Buffer, type: 'image/png', name: 'img2.png' }
-];
-
-const results = await client.moderateImages(images);
-results.forEach((result, index) => {
-  console.log(`Imagen ${index + 1}: ${result.isSafe ? 'Segura' : 'No segura'}`);
-});
-```
-
-## Desarrollo
-
-```bash
-# Instalar dependencias
-npm install
-
-# Compilar
-npm run build
-
-# Ejecutar en modo desarrollo
-npm run dev
-
-# Linting
-npm run lint
-```
+- Node.js >= 16.0.0
+- Clave API de Anthropic
 
 ## Licencia
 
