@@ -1,0 +1,61 @@
+{
+  "name": "ad-moderator",
+  "version": "1.0.0",
+  "description": "A TypeScript library for detecting images not eligible for public ad spaces with pluggable analysis functions",
+  "main": "dist-obfuscated/index.js",
+  "types": "dist-obfuscated/index.d.ts",
+  "files": [
+    "dist-obfuscated/**/*",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "build:obfuscated": "npm run build && node scripts/obfuscate.js",
+    "dev": "ts-node src/index.ts",
+    "lint": "eslint src/**/*.ts",
+    "lint:fix": "eslint src/**/*.ts --fix",
+    "prepublishOnly": "npm run build:obfuscated",
+    "clean": "rm -rf dist dist-obfuscated",
+    "publish:obfuscated": "npm run build:obfuscated && npm publish --registry https://registry.npmjs.org/"
+  },
+  "keywords": [
+    "ad-moderation",
+    "content-moderation",
+    "image-classification",
+    "machine-learning",
+    "typescript",
+    "npm-library",
+    "pluggable",
+    "image-analysis",
+    "moderation",
+    "claude",
+    "ai"
+  ],
+  "author": "Your Name <your.email@example.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/ad-moderator.git"
+  },
+  "homepage": "https://github.com/yourusername/ad-moderator#readme",
+  "bugs": {
+    "url": "https://github.com/yourusername/ad-moderator/issues"
+  },
+  "dependencies": {
+    "sharp": "^0.33.0",
+    "canvas": "^2.11.2",
+    "axios": "^1.6.0",
+    "form-data": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.9.0",
+    "@typescript-eslint/eslint-plugin": "^6.12.0",
+    "@typescript-eslint/parser": "^6.12.0",
+    "eslint": "^8.54.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}

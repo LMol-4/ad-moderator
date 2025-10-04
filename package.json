@@ -1,18 +1,39 @@
 {
-  "name": "ad-moderator",
+  "name": "ad-moderator-monorepo",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Ad Moderator - Monorepo with NPM package and Firebase Functions",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "examples/*"
+  ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "ts-node src/index.ts"
+    "build": "pnpm -r run build",
+    "build:core": "pnpm --filter ad-moderator run build",
+    "build:functions": "pnpm --filter ad-moderator-firebase-functions run build",
+    "dev": "pnpm -r run dev",
+    "lint": "pnpm -r run lint",
+    "lint:fix": "pnpm -r run lint:fix",
+    "clean": "pnpm -r run clean",
+    "publish:core": "pnpm --filter ad-moderator publish",
+    "deploy:functions": "pnpm --filter ad-moderator-firebase-functions run deploy",
+    "test": "pnpm -r run test",
+    "test:core": "cd packages/core && node test.js",
+    "test:examples": "node examples/basic-usage.js",
+    "prepare": "pnpm run build:core",
+    "setup": "chmod +x scripts/*.sh && ./scripts/setup-monorepo.sh",
+    "deploy:all": "./scripts/deploy-all.sh --all"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "packageManager": "pnpm@10.18.0",
   "devDependencies": {
-    "ts-node": "^10.9.2",
+    "@types/node": "^20.9.0",
+    "@typescript-eslint/eslint-plugin": "^6.12.0",
+    "@typescript-eslint/parser": "^6.12.0",
+    "eslint": "^8.54.0",
     "typescript": "^5.9.3"
-  }
+  },
+  "engines": {
+    "node": ">=16.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "packageManager": "pnpm@10.18.0"
 }

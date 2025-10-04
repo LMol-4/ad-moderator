@@ -1,0 +1,16 @@
+{
+  "functions": {
+    "source": ".",
+    "runtime": "nodejs18",
+    "memory": "1GB",
+    "timeout": "60s"
+  },
+  "hosting": {
+    "public": "public",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ]
+  }
+}
