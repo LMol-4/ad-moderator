@@ -1,179 +1,104 @@
-# Ad Moderator Core
+# Ad Moderator
 
-Una librería TypeScript pluggable para moderación de imágenes con arquitectura flexible.
+Una librería TypeScript para detectar imágenes no elegibles para espacios publicitarios públicos usando Claude API.
 
-## 🚀 **Instalación**
+## Características
+
+- **Integración con Claude**: Análisis de imágenes usando la API de Claude
+- **Arquitectura Pluggable**: Integra cualquier función de análisis de imágenes
+- **Tipado Fuerte**: Completamente tipado con TypeScript
+- **Fácil de Usar**: API simple y clara
+- **Moderación Inteligente**: Detecta contenido inapropiado, violencia, contenido explícito, etc.
+
+## Instalación
 
 ```bash
 npm install ad-moderator
 ```
 
-## 📖 **Uso Básico**
+## Uso Básico
 
-### **Con Firebase Functions + Claude (Recomendado)**
+### Con Claude API (Recomendado)
 
 ```typescript
 import { AdModeratorClient } from 'ad-moderator';
 
-// Crear cliente
 const client = new AdModeratorClient();
 
-// Configurar función de Firebase que se comunica con Claude
-client.setFirebaseFunction(
-  'https://your-project-id.cloudfunctions.net/analyzeImageWithClaude',
-  'your-api-key' // Opcional
-);
+// Configurar Claude API
+client.setClaudeAnalyzer('tu-api-key-de-claude');
 
-// Inicializar y usar
+// Inicializar
 await client.initialize();
+
+// Moderar imagen
 const result = await client.moderateImage({
   buffer: imageBuffer,
-  filename: 'image.jpg',
-  mimeType: 'image/jpeg'
+  type: 'image/jpeg',
+  name: 'ad-image.jpg'
 });
+
+console.log('Es segura:', result.isSafe);
 ```
 
-### **Con función personalizada**
+### Con función personalizada
 
 ```typescript
 import { AdModeratorClient } from 'ad-moderator';
 
-// Crear cliente
 const client = new AdModeratorClient();
 
-// Configurar función de análisis personalizada
+// Configurar función personalizada
 client.setAnalysisFunction(async (imageBuffer, imageType, options) => {
-  // Tu lógica aquí - puede ser cualquier cosa:
-  // - Llamada a API externa
-  // - Modelo de ML local
-  // - Análisis de metadatos
-  return [];
+  // Tu lógica de análisis aquí
+  return [{
+    name: 'inappropriate_content',
+    confidence: 0.85,
+    severity: 'high'
+  }];
 });
 
 // Inicializar y usar
 await client.initialize();
-const result = await client.moderateImage({
-  buffer: imageBuffer,
-  filename: 'image.jpg',
-  mimeType: 'image/jpeg'
-});
+const result = await client.moderateImage(image);
 ```
 
-## 🔌 **Sistema de Plugins**
+## API
 
-### **FunctionAnalyzer (Más Fácil)**
+### AdModeratorClient
+
+#### `setClaudeAnalyzer(apiKey: string)`
+Configura el cliente para usar Claude API directamente.
+
+#### `setAnalysisFunction(function: AnalysisFunction)`
+Configura una función personalizada de análisis.
+
+#### `initialize(): Promise<void>`
+Inicializa el cliente.
+
+#### `moderateImage(image: ImageInput, options?: ModerationOptions): Promise<ModerationResult>`
+Modera una imagen individual.
+
+#### `moderateImages(images: ImageInput[], options?: ModerationOptions): Promise<ModerationResult[]>`
+Modera múltiples imágenes.
+
+#### `isImageSafe(image: ImageInput, options?: ModerationOptions): Promise<boolean>`
+Verifica si una imagen es segura para anuncios.
+
+## Tipos
 
 ```typescript
-import { FunctionAnalyzer } from 'ad-moderator';
-
-const analyzer = new FunctionAnalyzer('my-analyzer', async (imageBuffer, imageType, options) => {
-  // Tu lógica de análisis aquí
-  return [
-    {
-      name: 'inappropriate',
-      confidence: 0.8,
-      severity: 'high'
-    }
-  ];
-});
-```
-
-### **BaseImageAnalyzer (Para Casos Avanzados)**
-
-```typescript
-import { BaseImageAnalyzer } from 'ad-moderator';
-
-class MyAnalyzer extends BaseImageAnalyzer {
-  constructor() {
-    super('my-analyzer', '1.0.0');
-  }
-
-  async analyze(imageBuffer, imageType, options) {
-    // Tu lógica aquí
-    return [];
-  }
+interface ImageInput {
+  buffer: Buffer;
+  type: string;
+  name?: string;
 }
-```
 
-## 📚 **Ejemplos**
-
-### **Claude API**
-
-```typescript
-async function claudeAnalysis(imageBuffer, imageType, options) {
-  const response = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'x-api-key': process.env.CLAUDE_API_KEY,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      model: 'claude-3-sonnet-20240229',
-      messages: [{
-        role: 'user',
-        content: [
-          { type: 'text', text: 'Analyze this image for inappropriate content' },
-          { type: 'image', source: { type: 'base64', media_type: `image/${imageType}`, data: imageBuffer.toString('base64') } }
-        ]
-      }]
-    })
-  });
-  
-  const result = await response.json();
-  return parseClaudeResponse(result);
-}
-```
-
-### **API Externa**
-
-```typescript
-async function externalApiAnalysis(imageBuffer, imageType, options) {
-  const response = await fetch('https://your-api.com/analyze', {
-    method: 'POST',
-    headers: { 'Authorization': `Bearer ${process.env.API_KEY}` },
-    body: imageBuffer
-  });
-  
-  const result = await response.json();
-  return result.categories || [];
-}
-```
-
-## 🔧 **API Reference**
-
-### **AdModerator**
-
-```typescript
-class AdModerator {
-  constructor(config: AdModeratorConfig);
-  setAnalyzer(analyzer: ImageAnalyzer): void;
-  initialize(): Promise<void>;
-  moderateImage(input: ImageInput, options?: ModerationOptions): Promise<ModerationResult>;
-  moderateImages(inputs: ImageInput[], options?: ModerationOptions): Promise<ModerationResult[]>;
-  dispose(): void;
-}
-```
-
-### **FunctionAnalyzer**
-
-```typescript
-class FunctionAnalyzer extends BaseImageAnalyzer {
-  constructor(
-    name: string,
-    analyzeFunction: (imageBuffer: Buffer, imageType: string, options: ModerationOptions) => Promise<ModerationCategory[]>,
-    version?: string
-  );
-}
-```
-
-### **Tipos**
-
-```typescript
 interface ModerationResult {
   isSafe: boolean;
   confidence: number;
-  flaggedCategories: ModerationCategory[];
-  metadata: ModerationMetadata;
+  categories: ModerationCategory[];
+  metadata?: any;
 }
 
 interface ModerationCategory {
@@ -181,30 +106,65 @@ interface ModerationCategory {
   confidence: number;
   severity: 'low' | 'medium' | 'high' | 'critical';
 }
+```
 
-interface ImageInput {
-  buffer: Buffer;
-  filename?: string;
-  mimeType?: string;
+## Ejemplos
+
+### Moderar una imagen
+
+```typescript
+import { AdModeratorClient } from 'ad-moderator';
+import fs from 'fs';
+
+const client = new AdModeratorClient();
+client.setClaudeAnalyzer('tu-api-key');
+await client.initialize();
+
+// Cargar imagen
+const imageBuffer = fs.readFileSync('imagen.jpg');
+const result = await client.moderateImage({
+  buffer: imageBuffer,
+  type: 'image/jpeg',
+  name: 'imagen.jpg'
+});
+
+if (result.isSafe) {
+  console.log('✅ Imagen aprobada para anuncios');
+} else {
+  console.log('❌ Imagen rechazada:', result.categories);
 }
 ```
 
-## 🚀 **Desarrollo**
+### Moderar múltiples imágenes
+
+```typescript
+const images = [
+  { buffer: image1Buffer, type: 'image/jpeg', name: 'img1.jpg' },
+  { buffer: image2Buffer, type: 'image/png', name: 'img2.png' }
+];
+
+const results = await client.moderateImages(images);
+results.forEach((result, index) => {
+  console.log(`Imagen ${index + 1}: ${result.isSafe ? 'Segura' : 'No segura'}`);
+});
+```
+
+## Desarrollo
 
 ```bash
 # Instalar dependencias
-pnpm install
+npm install
 
 # Compilar
-pnpm run build
+npm run build
 
-# Desarrollo
-pnpm run dev
+# Ejecutar en modo desarrollo
+npm run dev
 
 # Linting
-pnpm run lint
+npm run lint
 ```
 
-## 📄 **Licencia**
+## Licencia
 
-MIT License - ver [LICENSE](../../LICENSE) para más detalles.
+MIT

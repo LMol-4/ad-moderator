@@ -13,6 +13,7 @@ export { ModelManager } from './core/ModelManager';
 // Export analyzers
 export { ImageAnalyzer, BaseImageAnalyzer, FunctionAnalyzer } from './analyzers/ImageAnalyzer';
 export { SimpleAnalyzer } from './analyzers/SimpleAnalyzer';
+export { ClaudeAnalyzer } from './analyzers/ClaudeAnalyzer';
 
 // Export all types
 export * from './types';

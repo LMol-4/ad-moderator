@@ -30,7 +30,7 @@ export class ModelManager {
     if (!this.analyzer) {
       throw new Error('No analyzer set. Call setAnalyzer() first.');
     }
-    logger.info(`Model manager initialized: ${this.config.name} v${this.config.version}`);
+    logger.info(`Model manager initialized: ${this.config?.name || 'Unknown'} v${this.config?.version || '1.0.0'}`);
   }
 
   /**

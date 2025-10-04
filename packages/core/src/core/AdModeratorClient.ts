@@ -7,6 +7,7 @@
 
 import { AdModerator } from './AdModerator';
 import { FunctionAnalyzer } from '../analyzers/ImageAnalyzer';
+import { ClaudeAnalyzer } from '../analyzers/ClaudeAnalyzer';
 import { AdModeratorConfig, ModerationOptions, ImageInput, ModerationResult } from '../types';
 
 export class AdModeratorClient {
@@ -27,7 +28,7 @@ export class AdModeratorClient {
 
     // Verificar que hay un analyzer configurado
     if (!this.moderator['modelManager']?.['analyzer']) {
-      throw new Error('No analyzer configured. Call setAnalysisFunction() or setFirebaseFunction() first.');
+      throw new Error('No analyzer configured. Call setAnalysisFunction() or setClaudeAnalyzer() first.');
     }
 
     await this.moderator.initialize();
@@ -44,68 +45,14 @@ export class AdModeratorClient {
   }
 
   /**
-   * Configurar función de Firebase para análisis con Claude
-   * @param firebaseFunctionUrl - URL de la función de Firebase
-   * @param apiKey - API Key para autenticación (opcional)
+   * Configurar Claude como analizador directo
+   * @param apiKey - API Key de Claude
    */
-  setFirebaseFunction(firebaseFunctionUrl: string, apiKey?: string): void {
-    // TODO: Implementar llamada a Firebase Function
-    // Esta función será implementada cuando esté lista la función de Firebase
-    
-    const firebaseAnalyzer = new FunctionAnalyzer('firebase-claude-analyzer', async (imageBuffer: Buffer, imageType: string, options: ModerationOptions) => {
-      try {
-        // Llamada a la función de Firebase que se comunicará con Claude
-        const response = await fetch(firebaseFunctionUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            ...(apiKey && { 'Authorization': `Bearer ${apiKey}` })
-          },
-          body: JSON.stringify({
-            image: imageBuffer.toString('base64'),
-            imageType: imageType,
-            options: options
-          })
-        });
-
-        if (!response.ok) {
-          throw new Error(`Firebase function error: ${response.status}`);
-        }
-
-        const result = await response.json() as {
-          isSafe: boolean;
-          confidence?: number;
-          severity?: string;
-          reason?: string;
-        };
-        
-        // La función de Firebase devuelve un boolean
-        // Convertimos a formato de categorías
-        if (result.isSafe === false) {
-          return [{
-            name: 'inappropriate_content',
-            confidence: result.confidence || 0.8,
-            severity: (result.severity as 'low' | 'medium' | 'high' | 'critical') || 'high',
-            reason: result.reason || 'Contenido detectado como inapropiado por Claude'
-          }];
-        }
-        
-        return []; // Imagen segura
-        
-      } catch (error) {
-        console.error('Error calling Firebase function:', error);
-        // En caso de error, devolver categoría de error
-        return [{
-          name: 'analysis_error',
-          confidence: 1.0,
-          severity: 'medium',
-          reason: 'Error al analizar la imagen con Claude'
-        }];
-      }
-    });
-
-    this.moderator.setAnalyzer(firebaseAnalyzer);
+  setClaudeAnalyzer(apiKey: string): void {
+    const claudeAnalyzer = new ClaudeAnalyzer(apiKey);
+    this.moderator.setAnalyzer(claudeAnalyzer);
   }
+
 
   /**
    * Moderar una imagen
