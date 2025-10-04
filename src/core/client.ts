@@ -78,10 +78,29 @@ export class AdModeratorClient {
         }
     }
 
+    // detects image format from buffer
+    private detectImageFormat(buffer: Buffer): "image/jpeg" | "image/png" | "image/webp" {
+        // png sig: 89 50 4E 47 0D 0A 1A 0A
+        if (buffer[0] === 0x89 && buffer[1] === 0x50 && buffer[2] === 0x4E && buffer[3] === 0x47) {
+            return "image/png";
+        }
+        // jpeg sig: FF D8 FF
+        else if (buffer[0] === 0xFF && buffer[1] === 0xD8 && buffer[2] === 0xFF) {
+            return "image/jpeg";
+        }
+        // webp sig: 52 49 46 46 (RIFF) followed by 57 45 42 50 (WEBP)
+        else if (buffer[0] === 0x52 && buffer[1] === 0x49 && buffer[2] === 0x46 && buffer[3] === 0x46 &&
+            buffer[8] === 0x57 && buffer[9] === 0x45 && buffer[10] === 0x42 && buffer[11] === 0x50) {
+            return "image/webp";
+        }
+        return "image/png";
+    }
+
     // analyzes the ad image and returns the image description
     private async describeAdImage(adImageBuffer: Buffer, flags: string[]): Promise<string | undefined> {
         try {
             const prompt = generateImageDescriptionPrompt(flags);
+            const mediaType = this.detectImageFormat(adImageBuffer);
             const response = await this.anthropic.beta.messages.create({
                 model: ANTHROPIC_MODEL,
                 max_tokens: 1024,
@@ -97,7 +116,7 @@ export class AdModeratorClient {
                         type: "image",
                         source: {
                           type: "base64",
-                          media_type: "image/png",
+                          media_type: mediaType,
                           data: adImageBuffer.toString('base64')
                         }
                       }
