@@ -1,26 +1,30 @@
 export const ANTHROPIC_MODEL = "claude-sonnet-4-5-20250929";
 
-export const AD_FLAGS = `
-    Tobacco and related products
-    Illegal drugs and controlled substances
-    Prescription or controlled medications
-    Counterfeit or imitation goods
-    Weapons and ammunition
-    Gambling and betting (unless licensed)
-    Adult or sexual content
-    Alcohol (depending on country or location)
-    Cryptocurrencies and high-risk financial products
-    Extremist, political, or religious propaganda
-    Violent or graphic content
-    Predatory or short-term lending
-    Discriminatory or hateful content
-    Hacking or malicious software
-    “Miracle” or pseudoscientific products
-    Data sales or surveillance services
-    Illegal or unregulated services
-`
+export const DEFAULT_AD_FLAGS = [
+    "Tobacco and related products",
+    "Illegal drugs and controlled substances",
+    "Prescription or controlled medications",
+    "Counterfeit or imitation goods",
+    "Weapons and ammunition",
+    "Gambling and betting",
+    "Adult or sexual content",
+    "Alcohol",
+    "Cryptocurrencies and high-risk financial products",
+    "Extremist, political, or religious propaganda",
+    "Violent or graphic content",
+    "Predatory or short-term lending",
+    "Discriminatory or hateful content",
+    "Hacking or malicious software",
+    "Miracle or pseudoscientific products",
+    "Data sales or surveillance services",
+    "Illegal or unregulated services"
+];
 
-export const IMAGE_DESCRIPTION_PROMPT = `You are an expert image description specialist tasked with creating comprehensive, objective descriptions for content moderation purposes.
+export function generateImageDescriptionPrompt(flags: string[]): string {
+    const flagsList = flags.map(flag => `    ${flag}`).join('\n');
+    const flagsJson = flags.map(flag => `        "${flag}": boolean`).join(',\n');
+    
+    return `You are an expert image description specialist tasked with creating comprehensive, objective descriptions for content moderation purposes.
 
 Please analyze the attached image and provide a complete, detailed description following these guidelines:
 
@@ -54,7 +58,7 @@ STRUCTURE YOUR DESCRIPTION TO INCLUDE:
 
 5. AD FLAGS:
     You are to describe any of these flags in the image in specific detail, if present.
-    ${AD_FLAGS}
+${flagsList}
 
 IMPORTANT MODERATION CONSIDERATIONS:
 - DO NOT censor or soften descriptions of potentially violating content
@@ -70,23 +74,8 @@ FORMATTING INSTRUCTIONS:
 {
     "imageDescription": "string",
     "adFlags": {
-        "Tobacco and related products": boolean,
-        "Illegal drugs and controlled substances": boolean,
-        "Prescription or controlled medications": boolean,
-        "Counterfeit or imitation goods": boolean,
-        "Weapons and ammunition": boolean,
-        "Gambling and betting": boolean,
-        "Adult or sexual content": boolean,
-        "Alcohol": boolean,
-        "Cryptocurrencies and high-risk financial products": boolean,
-        "Extremist, political, or religious propaganda": boolean,
-        "Violent or graphic content": boolean,
-        "Predatory or short-term lending": boolean,
-        "Discriminatory or hateful content": boolean,
-        "Hacking or malicious software": boolean,
-        "Miracle or pseudoscientific products": boolean,
-        "Data sales or surveillance services": boolean,
-        "Illegal or unregulated services": boolean,
+${flagsJson}
     }
 }
 `;
+}

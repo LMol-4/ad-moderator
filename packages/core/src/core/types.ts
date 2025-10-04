@@ -3,7 +3,10 @@ export interface AdStatus {
     negativeReasons?: string[];
 }
 
-export type AdMediaType = "digital" | "physical";
+export interface AdModerationOptions {
+    customFlags?: string[];
+    useOnlyCustomFlags?: boolean;
+}
 
 export interface ImageDescription {
     imageDescription: string;
@@ -11,3 +14,4 @@ export interface ImageDescription {
         [key: string]: boolean;
     };
 }
+

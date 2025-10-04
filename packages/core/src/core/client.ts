@@ -1,6 +1,6 @@
 import { Anthropic } from "@anthropic-ai/sdk";
-import { AdStatus, AdMediaType, ImageDescription } from "./types";
-import { ANTHROPIC_MODEL, IMAGE_DESCRIPTION_PROMPT } from "./config";
+import { AdStatus, AdModerationOptions, ImageDescription } from "./types";
+import { ANTHROPIC_MODEL, DEFAULT_AD_FLAGS, generateImageDescriptionPrompt } from "./config";
 
 export class AdModeratorClient {
     private readonly anthropic: Anthropic;
@@ -11,9 +11,19 @@ export class AdModeratorClient {
     }
 
     // return the ad status based on the image description
-    public async getAdStatus(adImageBuffer: Buffer, adMediaType: AdMediaType): Promise<AdStatus | undefined> {
+    public async getAdStatus(adImageBuffer: Buffer, options?: AdModerationOptions): Promise<AdStatus | undefined> {
         try {
-            const imageDescription = await this.describeAdImage(adImageBuffer);
+            let flags: string[];
+            
+            if (options?.useOnlyCustomFlags && options?.customFlags) {
+                flags = options.customFlags;
+            } else if (options?.customFlags) {
+                flags = [...DEFAULT_AD_FLAGS, ...options.customFlags];
+            } else {
+                flags = DEFAULT_AD_FLAGS;
+            }
+            
+            const imageDescription = await this.describeAdImage(adImageBuffer, flags);
             if (!imageDescription) {
                 throw new Error("Failed to describe ad image");
             }
@@ -69,8 +79,9 @@ export class AdModeratorClient {
     }
 
     // analyzes the ad image and returns the image description
-    private async describeAdImage(adImageBuffer: Buffer): Promise<string | undefined> {
+    private async describeAdImage(adImageBuffer: Buffer, flags: string[]): Promise<string | undefined> {
         try {
+            const prompt = generateImageDescriptionPrompt(flags);
             const response = await this.anthropic.beta.messages.create({
                 model: ANTHROPIC_MODEL,
                 max_tokens: 1024,
@@ -80,7 +91,7 @@ export class AdModeratorClient {
                     content: [
                       {
                         type: "text",
-                        text: `${IMAGE_DESCRIPTION_PROMPT}`
+                        text: prompt
                       },
                       {
                         type: "image",

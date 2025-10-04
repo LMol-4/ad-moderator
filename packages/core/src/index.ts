@@ -6,7 +6,7 @@
  */
 
 export { AdModeratorClient } from './core/client';
-export { AdStatus, AdMediaType, ImageDescription } from './core/types';
+export { AdStatus, AdModerationOptions, ImageDescription } from './core/types';
 
 // Version information
 export const VERSION = '1.0.3';
