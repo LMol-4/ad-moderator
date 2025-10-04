@@ -1,6 +1,6 @@
 {
   "name": "ad-moderator",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Ad Moderator helps you to moderate your ads based on the flags you provide.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -27,11 +27,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/yourusername/ad-moderator.git"
+    "url": "git+https://github.com/LMol-4/ad-moderator.git"
   },
-  "homepage": "https://github.com/yourusername/ad-moderator#readme",
+  "homepage": "https://github.com/LMol-4/ad-moderator#readme",
   "bugs": {
-    "url": "https://github.com/yourusername/ad-moderator/issues"
+    "url": "https://github.com/LMol-4/ad-moderator/issues"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.65.0"
