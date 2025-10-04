@@ -12,7 +12,8 @@
   "license": "ISC",
   "packageManager": "pnpm@10.18.0",
   "devDependencies": {
-    "ts-node": "^10.9.2",
-    "typescript": "^5.9.3"
+    "@anthropic-ai/sdk": "catalog:",
+    "ts-node": "catalog:",
+    "typescript": "catalog:"
   }
 }

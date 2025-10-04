@@ -1,0 +1,4 @@
+catalog:
+  "@anthropic-ai/sdk": ^0.65.0
+  "ts-node": ^10.9.2
+  "typescript": ^5.9.3
