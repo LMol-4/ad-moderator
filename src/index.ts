@@ -4,7 +4,7 @@ import fs from 'fs';
 import path from 'path';
 import 'dotenv/config';
 
-// Test script for AdModeratorClient
+// Test script for AdModeratorClient 
 async function testAdModerator() {
     // Get API key from environment variables
     const API_KEY = process.env.ANTHROPIC_API_KEY;
