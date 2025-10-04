@@ -1,7 +1,7 @@
 {
   "name": "ad-moderator",
   "version": "1.0.8",
-  "description": "Ad Moderator helps you to moderate your ads based on the flags you provide.",
+  "description": "Ad Moderator helps you to moderate your images and videos based on the flags you provide.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
@@ -15,13 +15,16 @@
     "ad-moderation",
     "content-moderation",
     "image-classification",
+    "video-classification",
     "machine-learning",
     "typescript",
     "image-analysis",
+    "video-analysis",
     "moderation",
     "claude",
     "ai",
-    "anthropic"
+    "anthropic",
+    "ffmpeg"
   ],
   "author": "Luke, Gabriel <molonyluke@gmail.com, gabriel@example.com>",
   "license": "MIT",
