@@ -1,39 +1,47 @@
 {
-  "name": "ad-moderator-monorepo",
-  "version": "1.0.0",
-  "description": "Ad Moderator - Monorepo with NPM package and Firebase Functions",
-  "private": true,
-  "workspaces": [
-    "packages/*",
-    "examples/*"
+  "name": "ad-moderator",
+  "version": "1.0.4",
+  "description": "Ad Moderator helps you to moderate your ads based on the flags you provide.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/**/*",
+    "README.md"
   ],
   "scripts": {
-    "build": "pnpm -r run build",
-    "build:core": "pnpm --filter ad-moderator run build",
-    "build:functions": "pnpm --filter ad-moderator-firebase-functions run build",
-    "dev": "pnpm -r run dev",
-    "lint": "pnpm -r run lint",
-    "lint:fix": "pnpm -r run lint:fix",
-    "clean": "pnpm -r run clean",
-    "publish:core": "pnpm --filter ad-moderator publish",
-    "deploy:functions": "pnpm --filter ad-moderator-firebase-functions run deploy",
-    "test": "pnpm -r run test",
-    "test:core": "cd packages/core && node test.js",
-    "test:examples": "node examples/basic-usage.js",
-    "prepare": "pnpm run build:core",
-    "setup": "chmod +x scripts/*.sh && ./scripts/setup-monorepo.sh",
-    "deploy:all": "./scripts/deploy-all.sh --all"
+    "build": "tsc"
+  },
+  "keywords": [
+    "ad-moderation",
+    "content-moderation",
+    "image-classification",
+    "machine-learning",
+    "typescript",
+    "image-analysis",
+    "moderation",
+    "claude",
+    "ai",
+    "anthropic"
+  ],
+  "author": "Luke, Gabriel <molonyluke@gmail.com, gabriel@example.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yourusername/ad-moderator.git"
+  },
+  "homepage": "https://github.com/yourusername/ad-moderator#readme",
+  "bugs": {
+    "url": "https://github.com/yourusername/ad-moderator/issues"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "catalog:"
   },
   "devDependencies": {
-    "@types/node": "^20.9.0",
-    "@typescript-eslint/eslint-plugin": "^6.12.0",
-    "@typescript-eslint/parser": "^6.12.0",
-    "eslint": "^8.54.0",
-    "typescript": "^5.9.3"
+    "@types/node": "catalog:",
+    "ts-node": "catalog:",
+    "typescript": "catalog:"
   },
   "engines": {
-    "node": ">=16.0.0",
-    "pnpm": ">=8.0.0"
-  },
-  "packageManager": "pnpm@10.18.0"
+    "node": ">=16.0.0"
+  }
 }

@@ -23,7 +23,7 @@ __tests__/
 .env.example
 
 # Archivos de build no ofuscados
-dist/
+# dist/ - We want to include dist/ in the package
 !dist-obfuscated/
 
 # Archivos de desarrollo

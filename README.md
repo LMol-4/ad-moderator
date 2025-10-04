@@ -67,28 +67,6 @@ interface AdModerationOptions {
 }
 ```
 
-### Default Flags
-
-The library comes with a comprehensive set of default flags for content moderation:
-
-- Tobacco and related products
-- Illegal drugs and controlled substances
-- Prescription or controlled medications
-- Counterfeit or imitation goods
-- Weapons and ammunition
-- Gambling and betting (unless licensed)
-- Adult or sexual content
-- Alcohol (depending on country or location)
-- Cryptocurrencies and high-risk financial products
-- Extremist, political, or religious propaganda
-- Violent or graphic content
-- Predatory or short-term lending
-- Discriminatory or hateful content
-- Hacking or malicious software
-- Miracle or pseudoscientific products
-- Data sales or surveillance services
-- Illegal or unregulated services
-
 ## Requirements
 
 - Node.js >= 16.0.0
