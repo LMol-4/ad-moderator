@@ -1,6 +1,10 @@
 import { Anthropic } from "@anthropic-ai/sdk";
 import { AdStatus, AdModerationOptions, ImageDescription } from "./types";
 import { ANTHROPIC_MODEL, DEFAULT_AD_FLAGS, generateImageDescriptionPrompt } from "./config";
+import ffmpeg from "fluent-ffmpeg";
+import * as fs from "fs";
+import * as path from "path";
+import * as os from "os";
 
 export class AdModeratorClient {
     private readonly anthropic: Anthropic;
@@ -8,6 +12,60 @@ export class AdModeratorClient {
         this.anthropic = new Anthropic({
             apiKey: this.apiKey
         });
+    }
+
+    public async getVideoAdStatus(adVideoBuffer: Buffer, options?: AdModerationOptions): Promise<AdStatus | undefined> {
+        try {
+            // tmp directory
+            const tmpDir = os.tmpdir();
+            const videoDir = path.join(tmpDir, 'video-analysis');
+            const screenshotsDir = path.join(videoDir, 'screenshots');
+            
+            if (!fs.existsSync(videoDir)) {
+                fs.mkdirSync(videoDir, { recursive: true });
+            }
+            if (!fs.existsSync(screenshotsDir)) {
+                fs.mkdirSync(screenshotsDir, { recursive: true });
+            }
+
+            const videoPath = path.join(videoDir, 'input-video.mp4');
+            fs.writeFileSync(videoPath, adVideoBuffer);
+
+            const duration = await this.getVideoDuration(videoPath);
+            await this.extractScreenshots(videoPath, screenshotsDir, duration);
+
+            const screenshotFiles = fs.readdirSync(screenshotsDir)
+                .filter(file => file.endsWith('.png'))
+                .map(file => path.join(screenshotsDir, file));
+
+            const screenshotResults = await Promise.all(
+                screenshotFiles.map(async (screenshotPath) => {
+                    const screenshotBuffer = fs.readFileSync(screenshotPath);
+                    return await this.getAdStatus(screenshotBuffer, options);
+                })
+            );
+
+            this.cleanupTempFiles(videoDir);
+
+            const failedResults = screenshotResults.filter(result => result && !result.isAdCompliant);
+            
+            if (failedResults.length > 0) {
+                const allNegativeReasons = failedResults
+                    .flatMap(result => result?.negativeReasons || [])
+                    .filter((reason, index, array) => array.indexOf(reason) === index); // remove duplicates
+
+                return {
+                    isAdCompliant: false,
+                    negativeReasons: allNegativeReasons
+                };
+            }
+
+            return { isAdCompliant: true };
+
+        } catch (error) {
+            console.error('Error analyzing video:', error);
+            return undefined;
+        }
     }
 
     // return the ad status based on the image description
@@ -133,6 +191,63 @@ export class AdModeratorClient {
         } catch (error) {
             console.error(error);
             return;
+        }
+    }
+
+    private async getVideoDuration(videoPath: string): Promise<number> {
+        return new Promise((resolve, reject) => {
+            ffmpeg.ffprobe(videoPath, (err: any, metadata: any) => {
+                if (err) {
+                    reject(new Error(`Failed to get video duration: ${err.message}`));
+                    return;
+                }
+                const duration = metadata.format.duration;
+                if (!duration) {
+                    reject(new Error('Could not determine video duration'));
+                    return;
+                }
+                resolve(duration);
+            });
+        });
+    }
+
+    // screenshots every 0.5 seconds
+    private async extractScreenshots(videoPath: string, outputDir: string, duration: number): Promise<void> {
+        return new Promise((resolve, reject) => {
+            // Generate timemarks every 0.5 seconds
+            const timemarks: string[] = [];
+            for (let i = 0; i < duration; i += 0.5) {
+                timemarks.push(i.toFixed(1));
+            }
+
+            ffmpeg(videoPath)
+                .on('filenames', (filenames: string[]) => {
+                    console.log(`Will generate ${filenames.length} screenshots: ${filenames.join(', ')}`);
+                })
+                .on('end', () => {
+                    console.log('Screenshots extracted successfully');
+                    resolve();
+                })
+                .on('error', (err: any) => {
+                    reject(new Error(`Failed to extract screenshots: ${err.message}`));
+                })
+                .screenshots({
+                    timemarks: timemarks,
+                    filename: 'screenshot-at-%s-seconds.png',
+                    folder: outputDir,
+                    size: '320x240' // small size for faster processing
+                });
+        });
+    }
+
+    private cleanupTempFiles(dirPath: string): void {
+        try {
+            if (fs.existsSync(dirPath)) {
+                fs.rmSync(dirPath, { recursive: true, force: true });
+                console.log('Temporary files cleaned up');
+            }
+        } catch (error) {
+            console.error('Error cleaning up temporary files:', error);
         }
     }
 
