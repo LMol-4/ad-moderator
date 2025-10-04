@@ -1,6 +1,8 @@
-export const ANTHROPIC_MODEL = "claude-sonnet-4-5-20250929";
-
-export const AD_FLAGS = `
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.IMAGE_DESCRIPTION_PROMPT = exports.AD_FLAGS = exports.ANTHROPIC_MODEL = void 0;
+exports.ANTHROPIC_MODEL = "claude-sonnet-4-5-20250929";
+exports.AD_FLAGS = `
     Tobacco and related products
     Illegal drugs and controlled substances
     Prescription or controlled medications
@@ -18,9 +20,8 @@ export const AD_FLAGS = `
     “Miracle” or pseudoscientific products
     Data sales or surveillance services
     Illegal or unregulated services
-`
-
-export const IMAGE_DESCRIPTION_PROMPT = `You are an expert image description specialist tasked with creating comprehensive, objective descriptions for content moderation purposes.
+`;
+exports.IMAGE_DESCRIPTION_PROMPT = `You are an expert image description specialist tasked with creating comprehensive, objective descriptions for content moderation purposes.
 
 Please analyze the attached image and provide a complete, detailed description following these guidelines:
 
@@ -54,7 +55,7 @@ STRUCTURE YOUR DESCRIPTION TO INCLUDE:
 
 5. AD FLAGS:
     You are to describe any of these flags in the image in specific detail, if present.
-    ${AD_FLAGS}
+    ${exports.AD_FLAGS}
 
 IMPORTANT MODERATION CONSIDERATIONS:
 - DO NOT censor or soften descriptions of potentially violating content
@@ -90,3 +91,4 @@ FORMATTING INSTRUCTIONS:
     }
 }
 `;
+//# sourceMappingURL=config.js.map
