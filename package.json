@@ -1,6 +1,6 @@
 {
   "name": "ad-moderator",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Ad Moderator helps you to moderate your images and videos based on the flags you provide.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
