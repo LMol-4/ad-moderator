@@ -56,17 +56,6 @@ const overrideResult = await client.getAdStatus(imageBuffer, {
 });
 ```
 
-## How Video Moderation Works
-
-The video moderation feature works by:
-
-1. **Extracting Screenshots**: The video is processed using FFmpeg to extract screenshots every 0.5 seconds
-2. **Image Analysis**: Each screenshot is analyzed using the same image moderation logic
-3. **Aggregated Results**: If any screenshot fails moderation, the entire video is marked as non-compliant
-4. **Cleanup**: Temporary files are automatically cleaned up after processing
-
-**Note**: Video processing requires FFmpeg to be installed on your system. The library extracts screenshots at 320x240 resolution for faster processing.
-
 ## API
 
 ### AdModeratorClient

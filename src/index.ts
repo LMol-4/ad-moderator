@@ -9,4 +9,4 @@ export { AdModeratorClient } from './core/client';
 export { AdStatus, AdModerationOptions, ImageDescription } from './core/types';
 
 // Version information
-export const VERSION = '1.0.9';
+export const VERSION = '1.1.0';
